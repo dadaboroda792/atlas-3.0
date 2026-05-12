@@ -480,11 +480,16 @@ textarea:focus {
 .edges {
   overflow: visible;
   pointer-events: none;
-  z-index: 4;
+  z-index: 1;
 }
 
 .canvas {
   z-index: 2;
+  pointer-events: none;
+}
+
+.canvas > * {
+  pointer-events: auto;
 }
 
 .edge-path {
@@ -492,9 +497,11 @@ textarea:focus {
   stroke: rgba(var(--edge-rgb, 122, 162, 255), 0.72);
   stroke-linecap: round;
   stroke-width: 2.25;
+  stroke-dasharray: 9 7;
   pointer-events: stroke;
   cursor: pointer;
   filter: drop-shadow(0 0 7px rgba(var(--edge-rgb, 122, 162, 255), 0.5));
+  animation: data-stream 3.2s linear infinite;
 }
 
 .edge-hit {
@@ -526,6 +533,15 @@ textarea:focus {
 
 .edge-label.selected {
   fill: #ffffff;
+}
+
+@keyframes data-stream {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -32;
+  }
 }
 
 .node {
