@@ -24,6 +24,7 @@ const addImageButton = document.querySelector("#addImageButton");
 const autoLayoutButton = document.querySelector("#autoLayoutButton");
 const gridVisibleButton = document.querySelector("#gridVisibleButton");
 const alignAssistButton = document.querySelector("#alignAssistButton");
+const flowDirectionInput = document.querySelector("#flowDirectionInput");
 const looseImageInput = document.querySelector("#looseImageInput");
 const gridSizeInput = document.querySelector("#gridSizeInput");
 const undoButton = document.querySelector("#undoButton");
@@ -44,15 +45,22 @@ let lastSaveName = "nodal-atlas";
 const state = {
   tool: "select",
   nodes: [
-    { id: "n1", x: 120, y: 120, w: 190, h: 96, title: "Core Loop", type: "system", customType: "", color: "mint", image: "", imageH: 96, note: "Main project logic and decision flow.", state: "normal", scratch: false },
-    { id: "n2", x: 430, y: 90, w: 190, h: 96, title: "Entities", type: "feature", customType: "", color: "blue", image: "", imageH: 96, note: "Characters, modules, scenes, systems.", state: "normal", scratch: false },
-    { id: "n3", x: 430, y: 250, w: 190, h: 96, title: "Relations", type: "idea", customType: "", color: "violet", image: "", imageH: 96, note: "Dependencies, causes, transitions, influence.", state: "normal", scratch: false }
+    { id: "n1", x: 130, y: 160, w: 210, h: 106, title: "Atlas Core Hub", type: "system", customType: "", color: "mint", image: "", imageH: 96, note: "Central navigation hub for world modules.", state: "pinned", scratch: false },
+    { id: "n2", x: 430, y: 90, w: 210, h: 106, title: "Faction Systems", type: "feature", customType: "", color: "blue", image: "", imageH: 96, note: "Political bodies, AI governance, alliances.", state: "normal", scratch: false },
+    { id: "n3", x: 430, y: 250, w: 210, h: 106, title: "Tech Dependency Mesh", type: "idea", customType: "", color: "violet", image: "", imageH: 96, note: "Dependencies between energy, ships, portals.", state: "normal", scratch: false },
+    { id: "n4", x: 760, y: 160, w: 220, h: 106, title: "Timeline Branch", type: "world", customType: "", color: "amber", image: "", imageH: 96, note: "Major event milestones across eras.", state: "highlighted", scratch: false },
+    { id: "n5", x: 760, y: 320, w: 220, h: 106, title: "Lore Module Container", type: "custom", customType: "Module", color: "rose", image: "", imageH: 96, note: "Container node for episodic lore packets.", state: "normal", scratch: false }
   ],
-  groups: [{ id: "g1", x: 86, y: 70, w: 590, h: 330, title: "Project Model" }],
+  groups: [
+    { id: "g1", x: 86, y: 70, w: 590, h: 360, title: "Cognitive Systems" },
+    { id: "g2", x: 710, y: 120, w: 320, h: 350, title: "Lore Timeline & Modules" }
+  ],
   images: [],
   edges: [
-    { id: "e1", from: "n1", to: "n2", label: "activity", color: "blue", note: "" },
-    { id: "e2", from: "n1", to: "n3", label: "influence", color: "violet", note: "" }
+    { id: "e1", from: "n1", to: "n2", label: "navigation", color: "blue", note: "Hub navigation stream." },
+    { id: "e2", from: "n1", to: "n3", label: "dependency", color: "violet", note: "Core dependency binding." },
+    { id: "e3", from: "n2", to: "n4", label: "event feed", color: "amber", note: "Factions trigger timeline shifts." },
+    { id: "e4", from: "n3", to: "n5", label: "module unlock", color: "rose", note: "Tech unlocks lore modules." }
   ],
   selectedIds: new Set(["n1"]),
   selectedEdgeId: null,
@@ -66,6 +74,7 @@ const state = {
   gridSize: 5,
   gridVisible: true,
   alignAssist: false,
+  flowDirection: "forward",
   currentPageId: "page1",
   pages: [],
   view: { x: 260, y: 130, scale: 1 },
@@ -84,6 +93,7 @@ state.pages = [{
 }];
 
 let renderQueued = false;
+let lastMiniMapMode = state.view.scale < 0.15;
 
 function scheduleRender() {
   if (renderQueued) return;
@@ -92,6 +102,7 @@ function scheduleRender() {
     renderQueued = false;
     if (state.panning && !state.dragging && !state.resizing) {
       applyView();
+      renderNodes();
     } else {
       fastRender();
     }
@@ -606,6 +617,23 @@ function applyView() {
   gridSizeInput.value = String(state.gridSize);
   gridVisibleButton.classList.toggle("active", state.gridVisible);
   alignAssistButton.classList.toggle("active", state.alignAssist);
+  const lowPowerMode = state.panning || state.view.scale < 0.2 || state.edges.length > 120;
+  canvasWrap.classList.toggle("perf-low", Boolean(lowPowerMode));
+  if (flowDirectionInput) flowDirectionInput.value = state.flowDirection;
+  const miniMapMode = state.view.scale < 0.15;
+  if (miniMapMode !== lastMiniMapMode) {
+    lastMiniMapMode = miniMapMode;
+    renderNodes();
+  }
+}
+
+function linkedCountByNodeId() {
+  const map = new Map();
+  for (const edge of state.edges) {
+    map.set(edge.from, (map.get(edge.from) || 0) + 1);
+    map.set(edge.to, (map.get(edge.to) || 0) + 1);
+  }
+  return map;
 }
 
 function updateInspector() {
@@ -846,6 +874,8 @@ function renderGhostNode() {
 }
 
 function renderNodes() {
+  const miniMapMode = state.view.scale < 0.15;
+  const linkCountByNode = miniMapMode ? linkedCountByNodeId() : null;
   removeStale(".node", new Set(state.nodes.map((node) => node.id)));
   for (const node of state.nodes) {
     let el = canvas.querySelector(`[data-id="${node.id}"]`);
@@ -863,6 +893,7 @@ function renderNodes() {
           <button type="button" data-action="child">Child</button>
           <button type="button" data-action="link">Link</button>
           <button type="button" data-action="duplicate">Dup</button>
+          <button type="button" data-action="unlink">Unlink</button>
           <button type="button" data-action="state">State</button>
         </div>
         <div class="node-image-wrap">
@@ -888,6 +919,9 @@ function renderNodes() {
     el.classList.toggle("scratch", Boolean(node.scratch));
     el.classList.toggle("selected", state.selectedIds.has(node.id));
     el.classList.toggle("edge-source", state.edgeSourceId === node.id);
+    const links = linkCountByNode?.get(node.id) || 0;
+    el.classList.toggle("zoom-hidden", miniMapMode && links < 3);
+    el.classList.toggle("zoom-label-only", miniMapMode && links >= 3);
     const title = el.querySelector(".node-title");
     if (state.editingTitleId !== node.id) title.textContent = node.title;
     title.onpointerdown = (event) => {
@@ -913,6 +947,14 @@ function renderNodes() {
           render();
         }
         if (action === "duplicate") duplicateNode(node.id);
+        if (action === "unlink") {
+          const before = state.edges.length;
+          state.edges = state.edges.filter((edge) => edge.from !== node.id && edge.to !== node.id);
+          if (before !== state.edges.length) {
+            pushHistory("Node unlinked");
+            render();
+          }
+        }
         if (action === "state") {
           const states = ["normal", "pinned", "highlighted", "locked", "temporary", "collapsed"];
           node.state = states[(states.indexOf(node.state || "normal") + 1) % states.length];
@@ -1543,6 +1585,20 @@ alignAssistButton.addEventListener("click", () => {
   state.alignAssist = !state.alignAssist;
   render();
 });
+if (flowDirectionInput) {
+  flowDirectionInput.addEventListener("change", () => {
+    state.flowDirection = flowDirectionInput.value;
+    if (state.flowDirection === "paused") {
+      canvasWrap.style.setProperty("--edge-flow-speed", "0s");
+      canvasWrap.style.setProperty("--edge-flow-direction", "normal");
+    } else {
+      canvasWrap.style.setProperty("--edge-flow-speed", "3.2s");
+      canvasWrap.style.setProperty("--edge-flow-direction", state.flowDirection === "reverse" ? "reverse" : "normal");
+    }
+    pushHistory("Flow direction changed");
+    render();
+  });
+}
 loadAtlasButton.addEventListener("click", () => {
   atlasLoadInput.value = "";
   atlasLoadInput.click();
