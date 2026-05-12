@@ -578,7 +578,11 @@ textarea:focus {
   cursor: grab;
   user-select: none;
   will-change: left, top, width, min-height;
+<<<<<<< codex/find-content-in-atlas-3.0-repo-910w9v
+  contain: layout style;
+=======
   contain: layout paint style;
+>>>>>>> main
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
 }
@@ -589,18 +593,30 @@ textarea:focus {
 
 .node.zoom-label-only {
   width: auto !important;
+<<<<<<< codex/find-content-in-atlas-3.0-repo-910w9v
+  min-width: 220px;
+  min-height: 0 !important;
+  padding: 10px 16px;
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  border-width: 2px;
+=======
   min-width: 120px;
   min-height: 0 !important;
   padding: 6px 10px;
   border-radius: 999px;
   backdrop-filter: blur(10px);
+>>>>>>> main
 }
 
 .node.zoom-label-only .node-type,
 .node.zoom-label-only .node-note,
 .node.zoom-label-only .node-image-wrap,
 .node.zoom-label-only .node-edit-title,
+<<<<<<< codex/find-content-in-atlas-3.0-repo-910w9v
+=======
 .node.zoom-label-only .node-mini-toolbar,
+>>>>>>> main
 .node.zoom-label-only .resize-handle {
   display: none !important;
 }
@@ -610,7 +626,12 @@ textarea:focus {
 }
 
 .node.zoom-label-only .node-title {
+<<<<<<< codex/find-content-in-atlas-3.0-repo-910w9v
+  font-size: 18px;
+  font-weight: 800;
+=======
   font-size: 12px;
+>>>>>>> main
   white-space: nowrap;
 }
 
@@ -738,6 +759,10 @@ textarea:focus {
 .node.selected .node-mini-toolbar,
 .node:hover .node-mini-toolbar {
   display: flex;
+}
+
+.node.selected .node-mini-toolbar {
+  display: flex !important;
 }
 
 .node-mini-toolbar button {
