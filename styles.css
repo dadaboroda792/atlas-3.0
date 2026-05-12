@@ -485,6 +485,11 @@ textarea:focus {
 
 .canvas {
   z-index: 2;
+  pointer-events: none;
+}
+
+.canvas > * {
+  pointer-events: auto;
 }
 
 .edge-path {
