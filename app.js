@@ -93,6 +93,7 @@ state.pages = [{
 }];
 
 let renderQueued = false;
+let lastMiniMapMode = state.view.scale < 0.15;
 
 function scheduleRender() {
   if (renderQueued) return;
@@ -101,6 +102,7 @@ function scheduleRender() {
     renderQueued = false;
     if (state.panning && !state.dragging && !state.resizing) {
       applyView();
+      renderNodes();
     } else {
       fastRender();
     }
