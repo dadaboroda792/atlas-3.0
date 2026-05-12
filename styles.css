@@ -9,6 +9,8 @@
   --accent-2: #7aa2ff;
   --danger: #ff6868;
   --shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+  --edge-flow-speed: 3.2s;
+  --edge-flow-direction: normal;
 }
 
 * {
@@ -210,6 +212,21 @@ button {
   width: auto;
   min-width: 42px;
   padding: 0 9px;
+}
+
+.flow-control {
+  width: auto;
+  min-width: 64px;
+}
+
+.flow-control span {
+  display: none;
+}
+
+.flow-control select {
+  height: 34px;
+  width: 56px;
+  padding: 4px 6px;
 }
 
 #gridVisibleButton.active,
@@ -480,11 +497,16 @@ textarea:focus {
 .edges {
   overflow: visible;
   pointer-events: none;
-  z-index: 4;
+  z-index: 1;
 }
 
 .canvas {
   z-index: 2;
+  pointer-events: none;
+}
+
+.canvas > * {
+  pointer-events: auto;
 }
 
 .edge-path {
@@ -492,9 +514,16 @@ textarea:focus {
   stroke: rgba(var(--edge-rgb, 122, 162, 255), 0.72);
   stroke-linecap: round;
   stroke-width: 2.25;
+  stroke-dasharray: 9 7;
   pointer-events: stroke;
   cursor: pointer;
   filter: drop-shadow(0 0 7px rgba(var(--edge-rgb, 122, 162, 255), 0.5));
+  animation: data-stream var(--edge-flow-speed) linear infinite;
+  animation-direction: var(--edge-flow-direction);
+}
+
+.canvas-wrap.perf-low .edge-path {
+  animation: none;
 }
 
 .edge-hit {
@@ -528,6 +557,15 @@ textarea:focus {
   fill: #ffffff;
 }
 
+@keyframes data-stream {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
 .node {
   --node-top: rgba(33, 38, 49, 0.98);
   --node-bottom: rgba(22, 26, 35, 0.98);
@@ -546,6 +584,39 @@ textarea:focus {
   user-select: none;
   will-change: left, top, width, min-height;
   contain: layout paint style;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+.node.zoom-hidden {
+  display: none;
+}
+
+.node.zoom-label-only {
+  width: auto !important;
+  min-width: 120px;
+  min-height: 0 !important;
+  padding: 6px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+}
+
+.node.zoom-label-only .node-type,
+.node.zoom-label-only .node-note,
+.node.zoom-label-only .node-image-wrap,
+.node.zoom-label-only .node-edit-title,
+.node.zoom-label-only .node-mini-toolbar,
+.node.zoom-label-only .resize-handle {
+  display: none !important;
+}
+
+.node.zoom-label-only .node-header {
+  padding: 0;
+}
+
+.node.zoom-label-only .node-title {
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .node:active {
