@@ -620,11 +620,6 @@ function applyView() {
   const lowPowerMode = state.panning || state.view.scale < 0.2 || state.edges.length > 120;
   canvasWrap.classList.toggle("perf-low", Boolean(lowPowerMode));
   flowDirectionInput.value = state.flowDirection;
-  const miniMapMode = state.view.scale < 0.15;
-  if (miniMapMode !== lastMiniMapMode) {
-    lastMiniMapMode = miniMapMode;
-    renderNodes();
-  }
 }
 
 function linkedCountByNodeId() {

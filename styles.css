@@ -518,12 +518,7 @@ textarea:focus {
   pointer-events: stroke;
   cursor: pointer;
   filter: drop-shadow(0 0 7px rgba(var(--edge-rgb, 122, 162, 255), 0.5));
-  animation: data-stream var(--edge-flow-speed) linear infinite;
-  animation-direction: var(--edge-flow-direction);
-}
-
-.canvas-wrap.perf-low .edge-path {
-  animation: none;
+  animation: data-stream 3.2s linear infinite;
 }
 
 .edge-hit {
@@ -594,12 +589,11 @@ textarea:focus {
 
 .node.zoom-label-only {
   width: auto !important;
-  min-width: 220px;
+  min-width: 120px;
   min-height: 0 !important;
-  padding: 10px 16px;
+  padding: 6px 10px;
   border-radius: 999px;
   backdrop-filter: blur(10px);
-  border-width: 2px;
 }
 
 .node.zoom-label-only .node-type,
@@ -616,8 +610,7 @@ textarea:focus {
 }
 
 .node.zoom-label-only .node-title {
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 12px;
   white-space: nowrap;
 }
 
