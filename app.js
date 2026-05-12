@@ -44,15 +44,22 @@ let lastSaveName = "nodal-atlas";
 const state = {
   tool: "select",
   nodes: [
-    { id: "n1", x: 120, y: 120, w: 190, h: 96, title: "Core Loop", type: "system", customType: "", color: "mint", image: "", imageH: 96, note: "Main project logic and decision flow.", state: "normal", scratch: false },
-    { id: "n2", x: 430, y: 90, w: 190, h: 96, title: "Entities", type: "feature", customType: "", color: "blue", image: "", imageH: 96, note: "Characters, modules, scenes, systems.", state: "normal", scratch: false },
-    { id: "n3", x: 430, y: 250, w: 190, h: 96, title: "Relations", type: "idea", customType: "", color: "violet", image: "", imageH: 96, note: "Dependencies, causes, transitions, influence.", state: "normal", scratch: false }
+    { id: "n1", x: 130, y: 160, w: 210, h: 106, title: "Atlas Core Hub", type: "system", customType: "", color: "mint", image: "", imageH: 96, note: "Central navigation hub for world modules.", state: "pinned", scratch: false },
+    { id: "n2", x: 430, y: 90, w: 210, h: 106, title: "Faction Systems", type: "feature", customType: "", color: "blue", image: "", imageH: 96, note: "Political bodies, AI governance, alliances.", state: "normal", scratch: false },
+    { id: "n3", x: 430, y: 250, w: 210, h: 106, title: "Tech Dependency Mesh", type: "idea", customType: "", color: "violet", image: "", imageH: 96, note: "Dependencies between energy, ships, portals.", state: "normal", scratch: false },
+    { id: "n4", x: 760, y: 160, w: 220, h: 106, title: "Timeline Branch", type: "world", customType: "", color: "amber", image: "", imageH: 96, note: "Major event milestones across eras.", state: "highlighted", scratch: false },
+    { id: "n5", x: 760, y: 320, w: 220, h: 106, title: "Lore Module Container", type: "custom", customType: "Module", color: "rose", image: "", imageH: 96, note: "Container node for episodic lore packets.", state: "normal", scratch: false }
   ],
-  groups: [{ id: "g1", x: 86, y: 70, w: 590, h: 330, title: "Project Model" }],
+  groups: [
+    { id: "g1", x: 86, y: 70, w: 590, h: 360, title: "Cognitive Systems" },
+    { id: "g2", x: 710, y: 120, w: 320, h: 350, title: "Lore Timeline & Modules" }
+  ],
   images: [],
   edges: [
-    { id: "e1", from: "n1", to: "n2", label: "activity", color: "blue", note: "" },
-    { id: "e2", from: "n1", to: "n3", label: "influence", color: "violet", note: "" }
+    { id: "e1", from: "n1", to: "n2", label: "navigation", color: "blue", note: "Hub navigation stream." },
+    { id: "e2", from: "n1", to: "n3", label: "dependency", color: "violet", note: "Core dependency binding." },
+    { id: "e3", from: "n2", to: "n4", label: "event feed", color: "amber", note: "Factions trigger timeline shifts." },
+    { id: "e4", from: "n3", to: "n5", label: "module unlock", color: "rose", note: "Tech unlocks lore modules." }
   ],
   selectedIds: new Set(["n1"]),
   selectedEdgeId: null,
