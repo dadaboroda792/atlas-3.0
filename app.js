@@ -24,6 +24,7 @@ const addImageButton = document.querySelector("#addImageButton");
 const autoLayoutButton = document.querySelector("#autoLayoutButton");
 const gridVisibleButton = document.querySelector("#gridVisibleButton");
 const alignAssistButton = document.querySelector("#alignAssistButton");
+const flowDirectionInput = document.querySelector("#flowDirectionInput");
 const looseImageInput = document.querySelector("#looseImageInput");
 const gridSizeInput = document.querySelector("#gridSizeInput");
 const undoButton = document.querySelector("#undoButton");
@@ -73,6 +74,7 @@ const state = {
   gridSize: 5,
   gridVisible: true,
   alignAssist: false,
+  flowDirection: "forward",
   currentPageId: "page1",
   pages: [],
   view: { x: 260, y: 130, scale: 1 },
@@ -613,6 +615,18 @@ function applyView() {
   gridSizeInput.value = String(state.gridSize);
   gridVisibleButton.classList.toggle("active", state.gridVisible);
   alignAssistButton.classList.toggle("active", state.alignAssist);
+  const lowPowerMode = state.panning || state.view.scale < 0.2 || state.edges.length > 120;
+  canvasWrap.classList.toggle("perf-low", Boolean(lowPowerMode));
+  flowDirectionInput.value = state.flowDirection;
+}
+
+function linkedCountByNodeId() {
+  const map = new Map();
+  for (const edge of state.edges) {
+    map.set(edge.from, (map.get(edge.from) || 0) + 1);
+    map.set(edge.to, (map.get(edge.to) || 0) + 1);
+  }
+  return map;
 }
 
 function updateInspector() {
@@ -853,6 +867,8 @@ function renderGhostNode() {
 }
 
 function renderNodes() {
+  const miniMapMode = state.view.scale < 0.15;
+  const linkCountByNode = miniMapMode ? linkedCountByNodeId() : null;
   removeStale(".node", new Set(state.nodes.map((node) => node.id)));
   for (const node of state.nodes) {
     let el = canvas.querySelector(`[data-id="${node.id}"]`);
@@ -870,6 +886,7 @@ function renderNodes() {
           <button type="button" data-action="child">Child</button>
           <button type="button" data-action="link">Link</button>
           <button type="button" data-action="duplicate">Dup</button>
+          <button type="button" data-action="unlink">Unlink</button>
           <button type="button" data-action="state">State</button>
         </div>
         <div class="node-image-wrap">
@@ -895,6 +912,9 @@ function renderNodes() {
     el.classList.toggle("scratch", Boolean(node.scratch));
     el.classList.toggle("selected", state.selectedIds.has(node.id));
     el.classList.toggle("edge-source", state.edgeSourceId === node.id);
+    const links = linkCountByNode?.get(node.id) || 0;
+    el.classList.toggle("zoom-hidden", miniMapMode && links < 3);
+    el.classList.toggle("zoom-label-only", miniMapMode && links >= 3);
     const title = el.querySelector(".node-title");
     if (state.editingTitleId !== node.id) title.textContent = node.title;
     title.onpointerdown = (event) => {
@@ -920,6 +940,14 @@ function renderNodes() {
           render();
         }
         if (action === "duplicate") duplicateNode(node.id);
+        if (action === "unlink") {
+          const before = state.edges.length;
+          state.edges = state.edges.filter((edge) => edge.from !== node.id && edge.to !== node.id);
+          if (before !== state.edges.length) {
+            pushHistory("Node unlinked");
+            render();
+          }
+        }
         if (action === "state") {
           const states = ["normal", "pinned", "highlighted", "locked", "temporary", "collapsed"];
           node.state = states[(states.indexOf(node.state || "normal") + 1) % states.length];
@@ -1548,6 +1576,18 @@ gridVisibleButton.addEventListener("click", () => {
 });
 alignAssistButton.addEventListener("click", () => {
   state.alignAssist = !state.alignAssist;
+  render();
+});
+flowDirectionInput.addEventListener("change", () => {
+  state.flowDirection = flowDirectionInput.value;
+  if (state.flowDirection === "paused") {
+    canvasWrap.style.setProperty("--edge-flow-speed", "0s");
+    canvasWrap.style.setProperty("--edge-flow-direction", "normal");
+  } else {
+    canvasWrap.style.setProperty("--edge-flow-speed", "3.2s");
+    canvasWrap.style.setProperty("--edge-flow-direction", state.flowDirection === "reverse" ? "reverse" : "normal");
+  }
+  pushHistory("Flow direction changed");
   render();
 });
 loadAtlasButton.addEventListener("click", () => {
