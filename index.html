@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nodal Atlas</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span>Nodal Atlas</span>
+        </div>
+        <div class="toolbar" role="toolbar" aria-label="Инструменты">
+          <button class="tool-button active" data-tool="select" title="Выбор (V)" aria-label="Выбор">V</button>
+          <button class="tool-button" data-tool="node" title="Нода (N)" aria-label="Нода">N</button>
+          <button class="tool-button" data-tool="edge" title="Связь (E)" aria-label="Связь">E</button>
+          <button class="tool-button" data-tool="group" title="Группа (G)" aria-label="Группа">G</button>
+          <button class="tool-button" data-tool="page" title="Page node (P)" aria-label="Page">P</button>
+        </div>
+        <div class="status">
+          <details class="file-menu">
+            <summary>File</summary>
+            <button id="saveAtlasButton" type="button">Save atlas</button>
+            <button id="saveAsAtlasButton" type="button">Save as...</button>
+            <button id="loadAtlasButton" type="button">Load atlas</button>
+            <label class="grid-control">
+              <span>Grid</span>
+              <select id="gridSizeInput">
+                <option value="0">Off</option>
+                <option value="5" selected>5 px</option>
+                <option value="10">10 px</option>
+                <option value="20">20 px</option>
+                <option value="40">40 px</option>
+              </select>
+            </label>
+          </details>
+          <button id="addImageButton" title="Add image" aria-label="Add image">Img</button>
+          <button id="autoLayoutButton" title="Auto layout" aria-label="Auto layout">Auto</button>
+          <button id="gridVisibleButton" title="Toggle grid" aria-label="Toggle grid">Grid</button>
+          <button id="alignAssistButton" title="Toggle center align" aria-label="Toggle center align">Align</button>
+          <button id="undoButton" title="Назад (Ctrl+Z)" aria-label="Назад">←</button>
+          <button id="redoButton" title="Вперёд (Ctrl+Y)" aria-label="Вперёд">→</button>
+          <span id="zoomLabel">100%</span>
+          <button id="fitView" title="Вписать" aria-label="Вписать">[]</button>
+          <input id="atlasLoadInput" type="file" accept="application/json,.json" hidden>
+          <input id="looseImageInput" type="file" accept="image/*" hidden>
+        </div>
+      </header>
+
+      <section class="workspace inspector-open" id="workspace">
+        <aside class="inspector" id="inspector">
+          <button class="inspector-toggle" id="inspectorToggle" title="Скрыть свойства" aria-label="Скрыть свойства">‹</button>
+          <div class="panel-title">Свойства</div>
+          <label>
+            <span>Название</span>
+            <input id="titleInput" type="text" autocomplete="off">
+          </label>
+          <label>
+            <span>Тип</span>
+            <select id="typeInput">
+              <option value="system">System</option>
+              <option value="feature">Feature</option>
+              <option value="idea">Idea</option>
+              <option value="risk">Risk</option>
+              <option value="world">World</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+          <label id="customTypeLabel" class="hidden">
+            <span>Свой тип</span>
+            <input id="customTypeInput" type="text" autocomplete="off" placeholder="Например: Quest">
+          </label>
+          <label>
+            <span>Цвет</span>
+            <select id="colorInput">
+              <option value="mint">Mint</option>
+              <option value="blue">Blue</option>
+              <option value="violet">Violet</option>
+              <option value="amber">Amber</option>
+              <option value="rose">Rose</option>
+              <option value="steel">Steel</option>
+            </select>
+          </label>
+          <label id="stateLabel">
+            <span>State</span>
+            <select id="nodeStateInput">
+              <option value="normal">Normal</option>
+              <option value="pinned">Pinned</option>
+              <option value="highlighted">Highlighted</option>
+              <option value="locked">Locked</option>
+              <option value="temporary">Temporary</option>
+              <option value="collapsed">Collapsed</option>
+            </select>
+          </label>
+          <button class="panel-action" id="scratchButton" type="button">Send to scratch</button>
+          <label id="imageLabel">
+            <span>Image</span>
+            <input id="imageInput" type="file" accept="image/*">
+          </label>
+          <button class="panel-action" id="clearImageButton" type="button">Clear image</button>
+          <label>
+            <span>Заметка</span>
+            <textarea id="noteInput" rows="5"></textarea>
+          </label>
+          <details class="history-panel">
+            <summary>История</summary>
+            <ol id="historyList"></ol>
+          </details>
+          <details class="history-panel">
+            <summary>Links</summary>
+            <div id="linksPreview" class="links-preview"></div>
+          </details>
+        </aside>
+
+        <button class="inspector-peek" id="inspectorPeek" title="Показать свойства" aria-label="Показать свойства">›</button>
+
+        <div class="canvas-wrap" id="canvasWrap">
+          <svg class="edges" id="edgesLayer"></svg>
+          <div class="canvas" id="canvas"></div>
+        </div>
+        <div class="page-tabs" id="pageTabs"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
