@@ -518,12 +518,7 @@ textarea:focus {
   pointer-events: stroke;
   cursor: pointer;
   filter: drop-shadow(0 0 7px rgba(var(--edge-rgb, 122, 162, 255), 0.5));
-  animation: data-stream var(--edge-flow-speed) linear infinite;
-  animation-direction: var(--edge-flow-direction);
-}
-
-.canvas-wrap.perf-low .edge-path {
-  animation: none;
+  animation: data-stream 3.2s linear infinite;
 }
 
 .edge-hit {
